@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy.linalg as la
 import scipy.stats as stats
+from IPython.display import display
 
 def import_league_data(file_path: str, verbose: bool = False):
     # import league data
