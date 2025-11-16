@@ -1,9 +1,6 @@
 # import libraries
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
-import numpy.linalg as la
-import scipy.stats as stats
 from IPython.display import display
 
 def import_league_data(file_path: str, verbose: bool = False):
@@ -28,7 +25,7 @@ def import_teams_data(file_path: str, verbose: bool = False):
 
     return teams, teams_list
 
-def process_game_data(df: pd.DataFrame, teams_list: pd.Series, method: str = "all", verbose: bool = False):
+def process_game_data(df: pd.DataFrame, teams_list: pd.Series, method: str = "distribute", verbose: bool = False):
     nrows, ncols = df.shape
 
     # pre-allocate scores S, games G, wins W matrices
