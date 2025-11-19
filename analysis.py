@@ -2,6 +2,8 @@
 import numpy as np
 import pandas as pd
 import numpy.linalg as la
+from IPython.display import display
+from processing import *
 
 # direct method for ranking
 def direct_method(A: pd.DataFrame, verbose: bool = False):
@@ -57,3 +59,43 @@ def nonlinear_method(teams: pd.Series, S: pd.DataFrame, G: pd.DataFrame, max_ite
     print('Maximum iterations reached without convergence.')
     return r
 
+def create_ranking(file_path: str, df: pd.DataFrame, max_iter: int = 100, tol: float = 1e-6, verbose: bool = False, save_file: str = None, save_type: str = 'csv'):
+    # import teams data
+    teams, teams_list = import_teams_data(file_path=file_path, verbose=verbose)
+
+    # process game data to get preference matrix A
+    S, G, W, A = process_game_data(df=df, teams_list=teams_list, method="distribute", verbose=verbose)
+
+    # compute rankings using direct method
+    r_direct = direct_method(A=A, verbose=verbose)
+
+    # compute rankings using nonlinear method
+    r_nonlinear = nonlinear_method(teams=teams_list, S=S, G=G, max_iter=max_iter, tol=tol, verbose=verbose)
+
+    # add wins column
+    wins = W.sum(axis=1).values
+
+    # compile results into a DataFrame
+    ranking = pd.DataFrame({'abbr': teams_list, 'Wins': wins, 'Direct Score': r_direct, 'Nonlinear Score': r_nonlinear})
+    ranking['Wins Rank'] = ranking['Wins'].rank(method='dense', ascending=False).astype(int)
+    ranking['Direct Rank'] = ranking['Direct Score'].rank(method='dense', ascending=False).astype(int)
+    ranking['Nonlinear Rank'] = ranking['Nonlinear Score'].rank(method='dense', ascending=False).astype(int)
+
+    # merge with full team names
+    result = pd.merge(teams, ranking, on='abbr')
+    # select ranks and rename team column
+    final_result = result[['team', 'Wins', 'Wins Rank', 'Direct Rank', 'Nonlinear Rank']].sort_values(by='Wins', ascending=False)
+    final_result.rename(columns={'team': 'Team'}, inplace=True)
+
+    display(final_result.style.hide(axis='index'))
+
+    # save results if save_file is provided
+    if save_file:
+        if save_type == 'csv':
+            final_result.to_csv(f'{save_file}.csv', index=False)
+        elif save_type == 'latex':
+            final_result.to_latex(f'{save_file}.tex', index=False)
+        else:
+            print('Unsupported save type. Please use "csv" or "latex".')
+
+    return final_result
