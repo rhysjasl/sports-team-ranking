@@ -65,7 +65,7 @@ def process_game_data(df: pd.DataFrame, teams_list: pd.Series, method: str = "di
     if method == "all":
         n = games_matrix.sum(axis=1)
         A_matrix = wins_matrix.divide(n).fillna(0)
-    if method == "distribute":
+    elif method == "distribute":
         A_matrix = pd.DataFrame(0., index=teams_list, columns=teams_list)
         for team in teams_list:
             for row in range(nrows):
@@ -75,6 +75,8 @@ def process_game_data(df: pd.DataFrame, teams_list: pd.Series, method: str = "di
                 # if team is home team, add outcome to ij
                 elif df.loc[row, 'home'] == team:
                     A_matrix.loc[team, df.loc[row, 'away']] += ((scores_matrix.loc[team, df.loc[row, 'away']] + 1) / (scores_matrix.loc[team, df.loc[row, 'away']] + scores_matrix.loc[df.loc[row, 'away'], team] + 2))
+    else:
+        raise ValueError('Method must be either "all" or "distribute".')
 
     if verbose:
         print("Preference Matrix A:")
