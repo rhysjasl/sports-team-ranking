@@ -7,6 +7,17 @@ from processing import *
 
 # direct method for ranking
 def direct_method(A: pd.DataFrame, verbose: bool = False):
+    """
+    Performs Keener's direct method for calculating rank
+
+    Args:
+        A (pd.DataFrame): Preference matrix calculated in processsing steps
+        verbose (bool, optional): Turns on verbose mode
+                                  If none, defaults to verbose mode off
+
+    Returns:
+        r_vec (np.ndarray): Ranking vector based on the largest real, positive eigenvalue and corresponding eigenvector of the A matrix
+    """
     # find largest real, positive eigenvalue and corresponding eigenvector
     lam, E = la.eig(A)
     ind = np.argmax(lam.real)
@@ -27,10 +38,30 @@ def direct_method(A: pd.DataFrame, verbose: bool = False):
 
 # define continuous monotone increasing function f(x)
 def f_inc(x):
+    """
+    The continuous monotone increasing function f(x) used in the nonlinear method
+    """
     return (0.05*x + x**2) / (2 + 0.05*x + x**2)
 
 # nonlinear method for ranking
 def nonlinear_method(teams: pd.Series, S: pd.DataFrame, G: pd.DataFrame, max_iter: int = 100, tol: float = 1e-6, verbose: bool = False):
+    """
+    Performs Keener's nonlinear method for calculating rank
+
+    Args:
+        teams (pd.Series): List of team name abbreviations
+        S (pd.DataFrame): Scores matrix with the total number of points scored by team i (rows) against team j (cols) across the entire season
+        G (pd.DataFrame): Games matrix with the total number of games played by team i (rows) against team j (cols) across the entire season - will be symmetric!
+        max_iter (int, optional): Maximum number of iterations to run through the nonlinear method if convergence is not reached
+                                  If none, defaults to 100 iterations
+        tol (float, optional): Tolerance threshold for reaching convergence
+                               If none, defaults to 1e-6
+        verbose (bool, optional): Turns on verbose mode
+                                  If none, defaults to verbose mode off
+
+    Returns:
+        r (np.ndarray): Ranking vector based on the f matrix composed with f(x) when convergence is reached (or after maximum iterations if convergence not reached)
+    """
     # initialize ranking vector
     r = np.ones(len(teams))
     # pre-allocate e matrix
@@ -60,6 +91,27 @@ def nonlinear_method(teams: pd.Series, S: pd.DataFrame, G: pd.DataFrame, max_ite
     return r
 
 def create_ranking(file_path: str, df: pd.DataFrame, max_iter: int = 100, tol: float = 1e-6, verbose: bool = False, save_file: str = None, save_type: str = 'csv'):
+    """
+    Performs all processing and analysis steps after the season data is loaded to create the final ranking by all methods
+
+    Args:
+        file_path (str): The full filepath (direct or relative) to the file containing the teams data
+        df (pd.DataFrame): Full season data as a DataFrame with the date, competing teams, final scores, and who won/lost
+        max_iter (int, optional): Maximum number of iterations to run through the nonlinear method if convergence is not reached
+                                  If none, defaults to 100 iterations
+        tol (float, optional): Tolerance threshold for reaching convergence
+                               If none, defaults to 1e-6
+        verbose (bool, optional): Turns on verbose mode
+                                  If none, defaults to verbose mode off
+        save_file (str, optional): Location to save the final rankings (without file extension)
+                                   If none, defaults to None (will not save ranking)
+        save_type (str, optional): File type to save the final rankings as - options: csv, latex
+                                   If none, defaults to csv
+
+    Returns:
+        final_result (pd.DataFrame): DataFrame containing all teams, total number of wins, and integer rank for number of wins, direct method, and nonlinear method 
+                                     DataFrame is sorted first by total number of wins, then by direct rank, then by nonlinear rank
+    """
     # import teams data
     teams, teams_list = import_teams_data(file_path=file_path, verbose=verbose)
 

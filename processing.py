@@ -4,6 +4,19 @@ import pandas as pd
 from IPython.display import display
 
 def import_league_data(file_path: str, verbose: bool = False):
+    """
+    Loads in full season data and formats as a DataFrame
+
+    Args:
+        file_path (str): The full filepath (direct or relative) to the file containing the data
+        verbose (bool, optional): Turns on verbose mode
+                                  If none, defaults to verbose mode off
+
+    Returns:
+        df (pd.DataFrame): Full season data as a DataFrame with the date, competing teams, final scores, and who won/lost
+        nrows (int): Number of rows in the DataFrame
+        ncols (int): Number of columns in the DataFrame
+    """
     # import league data
     df = pd.read_csv(file_path)
     # turn date column into datetime object
@@ -17,6 +30,18 @@ def import_league_data(file_path: str, verbose: bool = False):
     return df, nrows, ncols
 
 def import_teams_data(file_path: str, verbose: bool = False):
+    """
+    Loads in the file that contains the list of all teams in the league and their associated abbreviations
+
+    Args:
+        file_path (str): The full filepath (direct or relative) to the file containing the teams data
+        verbose (bool, optional): Turns on verbose mode
+                                  If none, defaults to verbose mode off
+
+    Returns:
+        teams (pd.DataFrame): List of all teams in the league and their associated abbreviations, as a DataFrame
+        teams_list (pd.Series): List of all team name abbreviations
+    """
     # import list of teams
     teams = pd.read_csv(file_path)
     teams_list = teams['abbr']
@@ -26,6 +51,25 @@ def import_teams_data(file_path: str, verbose: bool = False):
     return teams, teams_list
 
 def process_game_data(df: pd.DataFrame, teams_list: pd.Series, method: str = "distribute", verbose: bool = False):
+    """
+    Processes the full season dataset to be used for analysis
+
+    Args:
+        df (pd.DataFrame):
+        teams_list (pd.Series):
+        method (str, optional): Determines the method for constructing the A matrix
+                                "distribute" awards one point per game played, distributed between the two teams proportionally to the final score
+                                "all" awards one point to the winner of the game and normalizes the total number of wins against a team by the total number of games played against that team
+                                If none, defaults to "distribute"
+        verbose (bool, optional): Turns on verbose mode
+                                  If none, defaults to verbose mode off
+
+    Returns:
+        scores_matrix (pd.DataFrame): Matrix with the total number of points scored by team i (rows) against team j (cols) across the entire season
+        games_matrix (pd.DataFrame): Matrix with the total number of games played by team i (rows) against team j (cols) across the entire season - will be symmetric!
+        wins_matrix (pd.DataFrame): Matrix with the total number of wins by team i (rows) against team j (cols) across the entire season
+        A_matrix (pd.DataFrame): Preference matrix to be used in the direct method
+    """
     nrows, ncols = df.shape
 
     # pre-allocate scores S, games G, wins W matrices
