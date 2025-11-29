@@ -82,6 +82,9 @@ def nonlinear_method(teams: pd.Series, S: pd.DataFrame, G: pd.DataFrame, max_ite
         # check for convergence
         if la.norm(r_new - r, ord=1) < tol:
             print(f'Converged after {it + 1} iterations.')
+            if verbose:
+                print('f Matrix:')
+                display(fmat)
             return r_new
         
         r = r_new
@@ -116,7 +119,7 @@ def create_ranking(file_path: str, df: pd.DataFrame, max_iter: int = 100, tol: f
     teams, teams_list = import_teams_data(file_path=file_path, verbose=verbose)
 
     # process game data to get preference matrix A
-    S, G, W, A = process_game_data(df=df, teams_list=teams_list, method="distribute", verbose=verbose)
+    S, G, W, A = process_game_data(df=df, teams_list=teams_list, method='distribute', verbose=verbose)
 
     # compute rankings using direct method
     r_direct = direct_method(A=A, verbose=verbose)
@@ -136,7 +139,7 @@ def create_ranking(file_path: str, df: pd.DataFrame, max_iter: int = 100, tol: f
     # merge with full team names
     result = pd.merge(teams, ranking, on='abbr')
     # select ranks and rename team column
-    final_result = result[['team', 'Wins', 'Wins Rank', 'Direct Rank', 'Nonlinear Rank']].sort_values(by='Wins', ascending=False)
+    final_result = result[['team', 'Wins', 'Wins Rank', 'Direct Rank', 'Nonlinear Rank']].sort_values(by=['Wins', 'Direct Rank', 'Nonlinear Rank'], ascending=[False, True, True])
     final_result.rename(columns={'team': 'Team'}, inplace=True)
 
     display(final_result.style.hide(axis='index'))

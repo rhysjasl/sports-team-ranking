@@ -50,7 +50,7 @@ def import_teams_data(file_path: str, verbose: bool = False):
 
     return teams, teams_list
 
-def process_game_data(df: pd.DataFrame, teams_list: pd.Series, method: str = "distribute", verbose: bool = False):
+def process_game_data(df: pd.DataFrame, teams_list: pd.Series, method: str = 'distribute', verbose: bool = False):
     """
     Processes the full season dataset to be used for analysis
 
@@ -98,18 +98,18 @@ def process_game_data(df: pd.DataFrame, teams_list: pd.Series, method: str = "di
                     wins_matrix.loc[team, df.loc[row, 'away']] += 1
 
     if verbose:
-        print("Scores Matrix:")
+        print('Scores Matrix:')
         display(scores_matrix)
-        print("Games Matrix:")
+        print('Games Matrix:')
         display(games_matrix)
-        print("Wins Matrix:")
+        print('Wins Matrix:')
         display(wins_matrix)
 
     # construct preference matrix A
-    if method == "all":
+    if method == 'all':
         n = games_matrix.sum(axis=1)
         A_matrix = wins_matrix.divide(n).fillna(0)
-    elif method == "distribute":
+    elif method == 'distribute':
         A_matrix = pd.DataFrame(0., index=teams_list, columns=teams_list)
         for team in teams_list:
             for row in range(nrows):
@@ -123,7 +123,7 @@ def process_game_data(df: pd.DataFrame, teams_list: pd.Series, method: str = "di
         raise ValueError('Method must be either "all" or "distribute".')
 
     if verbose:
-        print("Preference Matrix A:")
+        print('Preference Matrix A:')
         display(A_matrix)
     
     return scores_matrix, games_matrix, wins_matrix, A_matrix
