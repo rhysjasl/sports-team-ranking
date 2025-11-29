@@ -142,9 +142,9 @@ def create_ranking(file_path: str, df: pd.DataFrame, max_iter: int = 100, tol: f
     # save results if save_file is provided
     if save_file:
         if save_type == 'csv':
-            final_result.to_csv(save_file, index=False)
+            final_result.to_csv(f'{save_file}.csv', index=False)
         elif save_type == 'latex':
-            final_result.to_latex(save_file, index=False)
+            final_result.to_latex(f'{save_file}.tex', index=False)
         else:
             raise ValueError('Unsupported save type. Please use "csv" or "latex".')
 
