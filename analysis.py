@@ -31,7 +31,7 @@ def direct_method(A: pd.DataFrame, verbose: bool = False):
     r_vec = max_E / np.sum(max_E)
     if verbose:
         # verify that ranking vector sums to 1
-        print(f'Ranking vector sums to: {np.sum(r_vec)}')
+        print(f'Direct method ranking vector sums to: {np.sum(r_vec)}')
 
     # return ranking vector
     return r_vec
@@ -44,7 +44,7 @@ def f_inc(x):
     return (0.05*x + x**2) / (2 + 0.05*x + x**2)
 
 # nonlinear method for ranking
-def nonlinear_method(teams: pd.Series, S: pd.DataFrame, G: pd.DataFrame, max_iter: int = 100, tol: float = 1e-6, verbose: bool = False):
+def nonlinear_method(teams: pd.Series, S: pd.DataFrame, G: pd.DataFrame, max_iter: int = 100, tol: float = 1e-6):
     """
     Performs Keener's nonlinear method for calculating rank
 
@@ -56,8 +56,6 @@ def nonlinear_method(teams: pd.Series, S: pd.DataFrame, G: pd.DataFrame, max_ite
                                   If none, defaults to 100 iterations
         tol (float, optional): Tolerance threshold for reaching convergence
                                If none, defaults to 1e-6
-        verbose (bool, optional): Turns on verbose mode
-                                  If none, defaults to verbose mode off
 
     Returns:
         r (np.ndarray): Ranking vector based on the f matrix composed with f(x) when convergence is reached (or after maximum iterations if convergence not reached)
@@ -81,16 +79,13 @@ def nonlinear_method(teams: pd.Series, S: pd.DataFrame, G: pd.DataFrame, max_ite
 
         # check for convergence
         if la.norm(r_new - r, ord=1) < tol:
-            print(f'Converged after {it + 1} iterations.')
-            if verbose:
-                print('f Matrix:')
-                display(fmat)
+            print(f'Nonlinear method converged after {it + 1} iterations.')
             return r_new
         
         r = r_new
 
     # if max_iters reached without convergence
-    print('Maximum iterations reached without convergence.')
+    print('Nonlinear method maximum iterations reached without convergence.')
     return r
 
 def create_ranking(file_path: str, df: pd.DataFrame, max_iter: int = 100, tol: float = 1e-6, verbose: bool = False, save_file: str = None, save_type: str = 'csv'):
@@ -125,7 +120,7 @@ def create_ranking(file_path: str, df: pd.DataFrame, max_iter: int = 100, tol: f
     r_direct = direct_method(A=A, verbose=verbose)
 
     # compute rankings using nonlinear method
-    r_nonlinear = nonlinear_method(teams=teams_list, S=S, G=G, max_iter=max_iter, tol=tol, verbose=verbose)
+    r_nonlinear = nonlinear_method(teams=teams_list, S=S, G=G, max_iter=max_iter, tol=tol)
 
     # add wins column
     wins = W.sum(axis=1).values
