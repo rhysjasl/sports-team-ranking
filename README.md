@@ -1,5 +1,6 @@
 # 🏆 Sports Team Ranking
-Ranking MLB ⚾, NBA 🏀, NFL 🏈 teams using a direct matrix method and a nonlinear method
+✨ Ranking MLB ⚾, NBA 🏀, NFL 🏈 teams using a direct matrix method and a nonlinear method ✨ <br/>
+This analysis uses the methods outlined by James Keener in his 1993 paper, "The Perron-Frobenius theorem and the ranking of football teams". The direct method creates a ranking vector from the eigenvector that corresponds to the largest real, positive eigenvalue of the preference matrix A, which is determined by the outcome of all games. The nonlinear method creates a matrix from the scores of each game and passes that through a continuous monotone increasing function to recursively produce a ranking vector until convergence is reached.
 <br/>
 
 ## 🗂️ Repository contains
@@ -22,3 +23,6 @@ Ranking MLB ⚾, NBA 🏀, NFL 🏈 teams using a direct matrix method and a non
 - If you would like to use these methods in your own code to analyze your own data, feel free to import the functions defined in the `processing.py` and `analysis.py` files. 
 >[!CAUTION]
 >Pay attention to how the example data sets have been structured if you would like to use these functions with your own data, as the functions call certain named columns from the example data sets
+
+## 📖 Reference
+Keener, J. P. (1993). The Perron-Frobenius theorem and the ranking of football teams. SIAM review, 35(1), 80-93.
