@@ -71,7 +71,7 @@ def nonlinear_method(teams: pd.Series, S: pd.DataFrame, G: pd.DataFrame, max_ite
         # build e matrix from scores
         for i in range(len(teams)):
             for j in range(len(teams)):
-                e.iloc[i, j] = (5 + S.iloc[i, j] + (S.iloc[i, j] ** (2/3))) / (5 + S.iloc[j, i] + (S.iloc[j, i] ** (2/3)))
+                e.iloc[i, j] = (5 + S.iloc[i, j] + (S.iloc[i, j] ** (2/3))) / (5 + S.iloc[j, i] + (S.iloc[i, j] ** (2/3)))
                 fmat.iloc[i, j] = f_inc(e.iloc[i, j] * r[j])
 
         # create ranking vector based on f matrix
